@@ -1,1 +1,1 @@
-# cdp-agent-demo
+# ai-agent-demo
