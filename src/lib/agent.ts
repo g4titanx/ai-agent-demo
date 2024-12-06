@@ -1,5 +1,3 @@
-import { CdpAgentkit } from "@coinbase/cdp-agentkit-core";
-import { CdpToolkit } from "@coinbase/cdp-langchain";
 import { ChatOpenAI } from "@langchain/openai";
 import { HumanMessage } from "@langchain/core/messages";
 
@@ -13,16 +11,11 @@ export async function getAgentResponse(message: string, address: string): Promis
       }
     });
 
-    const config = {
-      networkId: import.meta.env.VITE_NETWORK_ID || "base-sepolia",
-    };
-
-    const agentkit = await CdpAgentkit.configureWithWallet(config);
-    const cdpToolkit = new CdpToolkit(agentkit);
-    const tools = cdpToolkit.getTools();
-
     const response = await llm.invoke([
-      new HumanMessage(`User (${address}): ${message}`)
+      new HumanMessage(
+        `You are an AI assistant focused on blockchain and crypto topics. 
+         User with wallet address ${address} asks: ${message}`
+      )
     ]);
 
     return response.content.toString();

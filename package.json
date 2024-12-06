@@ -17,14 +17,15 @@
     "@langchain/langgraph": "^0.2.24",
     "@langchain/openai": "^0.3.14",
     "@rainbow-me/rainbowkit": "^2.2.1",
+    "@tanstack/react-query": "^5.62.2",
     "@web3modal/ethereum": "^2.7.1",
     "@web3modal/react": "^2.7.1",
     "dotenv": "^16.4.7",
-    "ethers": "^5.7.2",
+    "ethers": "^6.13.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "viem": "^2.21.54",
-    "wagmi": "^2.13.4"
+    "wagmi": "^2.13.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",

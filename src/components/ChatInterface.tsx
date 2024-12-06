@@ -16,36 +16,39 @@ export default function ChatInterface() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading || !isConnected) return;
-
+  
     const userMessage: Message = { role: 'user', content: input };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
-
+  
     try {
       const response = await getAgentResponse(input, address || '');
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: response 
-      }]);
+      const assistantMessage: Message = {
+        role: 'assistant',
+        content: response
+      };
+      setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Chat error details:', error);
+      let errorMessage = 'Sorry, there was an error processing your request.';
+      
+      if (error instanceof Error) {
+        console.error('Error name:', error.name);
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+        // Optionally show more specific error to user
+        errorMessage += ' ' + error.message;
+      }
+      
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: 'Sorry, there was an error processing your request.' 
+        content: errorMessage
       }]);
     } finally {
       setIsLoading(false);
     }
   };
-
-  if (!isConnected) {
-    return (
-      <div className="bg-white p-6 rounded-lg shadow-sm">
-        <p className="text-gray-500">Please connect your wallet to start chatting</p>
-      </div>
-    );
-  }
 
   return (
     <div className="bg-white rounded-lg shadow-sm mt-6 p-6">
