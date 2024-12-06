@@ -1,5 +1,5 @@
-// src/components/ChatInterface.tsx
 import { useState } from 'react';
+import { useAccount } from 'wagmi';
 import { getAgentResponse } from '../lib/agent';
 
 interface Message {
@@ -7,42 +7,45 @@ interface Message {
   content: string;
 }
 
-interface ChatInterfaceProps {
-  userAddress: string;
-}
-
-export default function ChatInterface({ userAddress }: ChatInterfaceProps) {
+export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { address, isConnected } = useAccount();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
-  
+    if (!input.trim() || isLoading || !isConnected) return;
+
     const userMessage: Message = { role: 'user', content: input };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
-  
+
     try {
-      const response = await getAgentResponse(input, userAddress);
-      const assistantMessage: Message = {
-        role: 'assistant',
-        content: response.toString() // Convert response to string explicitly
-      };
-      setMessages(prev => [...prev, assistantMessage]);
+      const response = await getAgentResponse(input, address || '');
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: response 
+      }]);
     } catch (error) {
       console.error('Error:', error);
-      const errorMessage: Message = {
-        role: 'assistant',
-        content: 'Sorry, there was an error processing your request.'
-      };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: 'Sorry, there was an error processing your request.' 
+      }]);
     } finally {
       setIsLoading(false);
     }
   };
+
+  if (!isConnected) {
+    return (
+      <div className="bg-white p-6 rounded-lg shadow-sm">
+        <p className="text-gray-500">Please connect your wallet to start chatting</p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-sm mt-6 p-6">
